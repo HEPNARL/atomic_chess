@@ -3,11 +3,11 @@ module Main where
 
 import ChessPieces
 import Moves
-    ( kingMoves, executeMove, moveTests, getInaccessibleSquares, getPlayerMoves )
+    ( kingMoves, executeMove, moveTests, getInaccessibleSquares, getPlayerMoves , nullMove)
 import Display
 import PositionValid
 import IntExtended ( InfInt (NegInf, PosInf, IntValue), zero )
-import Distribution.Utils.Generic (fstOf3, sndOf3)
+import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 -- positions will be represented as a list of pieces and their positions
 -- explosion deletes all surrounding squares
 
@@ -23,7 +23,7 @@ isLeaf (Tree _ children _ _ _) = null children
 
 eval :: GameTree -> InfInt
 eval tree
-    | terminated Black pcs = IntValue 1000000  --PosInf
+    | terminated Black pcs = PosInf  --PosInf
     | terminated White pcs = NegInf
     | otherwise = IntValue (length (getPlayerMoves White pcs) - length (getPlayerMoves Black pcs))
     where
@@ -36,7 +36,7 @@ getChildren (Tree _ children _ _ _) = children
 
 getMove :: GameTree -> Move
 getMove (Tree _ _ _ (Just move) _) = move
-getMove (Tree _ _ _ Nothing _) = Mv (Coord 0 0) (Coord 0 0) -- runtime error prevention, shouldn't be used
+getMove (Tree _ _ _ Nothing _) = nullMove -- runtime error prevention, shouldn't be used
 
 getColor :: GameTree -> Color
 getColor (Tree _ _ _ _ color) = color
@@ -81,8 +81,8 @@ getBest White ((val, moves, tree):xs)
     where
         other = getBest White xs
         best = getMove tree
-getBest Black [] = (PosInf, [Mv (Coord 0 0) (Coord 0 0)])
-getBest White [] = (NegInf, [Mv (Coord 0 0) (Coord 0 0)])
+getBest Black [] = (PosInf, [nullMove])
+getBest White [] = (NegInf, [nullMove])
 
 
 
@@ -133,7 +133,13 @@ playGame tree = do
         if finished $ getPieces moved
             then do 
                 (if terminated  Black $ getPieces tree then putStrLn "Game over white won." else putStrLn "Game over black won.")
-        else playGame (playMove moved (head $ sndOf3 (abStart 3 moved)))
+        else do
+            let res = abStart 3 moved
+            if PosInf == fstOf3 res || NegInf == fstOf3 res
+                then do
+                    playGame (playMove moved (head $ sndOf3 res))
+            else do
+                playGame (playMove moved (head $ sndOf3 (abStart 4 (trdOf3 res))))
 
 
 

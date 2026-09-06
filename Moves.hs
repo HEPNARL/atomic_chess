@@ -1,5 +1,5 @@
 {- HLINT ignore "Redundant bracket" -}
-module Moves (getPlayerMoves, executeMove, moveTests, kingMoves, getInaccessibleSquares) where
+module Moves (getPlayerMoves, executeMove, moveTests, kingMoves, getInaccessibleSquares, nullMove) where
 
 import ChessPieces
 import Data.List (nub)
@@ -20,6 +20,9 @@ executeMove pieces move = explodePieces (movePiece pieces move)
 getInaccessibleSquares :: Color -> [Piece] -> [Coordinate]
 getInaccessibleSquares color pieces = [ end | Mv _ end <- (getPlayerMoves (inverseColor color) pieces)] ++ [ crd | Pc _ crd <- filter (\x -> (getId x) <= 10 || ((getColor x) /= color)) pieces]
 
+-- runtime error precaution - Maybe Move should be used instead in cases where no move is expected outcome
+nullMove :: Move
+nullMove = Mv (Coord 0 0) (Coord 0 0)
 ----------------------------------------------------------------------
 -- TESTS
 moveTests :: IO()
