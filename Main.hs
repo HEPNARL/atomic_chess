@@ -6,7 +6,7 @@ import Moves
     ( kingMoves, executeMove, moveTests, getInaccessibleSquares, getPlayerMoves , nullMove)
 import Display
 import PositionValid
-import IntExtended ( InfInt (NegInf, PosInf, IntValue), zero )
+import IntExtended ( InfInt (NegInf, PosInf, IntValue), zero, infIntTests )
 import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 -- positions will be represented as a list of pieces and their positions
 -- explosion deletes all surrounding squares
@@ -147,5 +147,8 @@ main :: IO ()
 main = do
     explosionTests
     moveTests
+    infIntTests
+    terminationTests
     startGame
-    -- example
+    
+

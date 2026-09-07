@@ -1,4 +1,5 @@
 module IntExtended where
+import ChessPieces (test)
 
 
 data InfInt = NegInf | PosInf | IntValue Int
@@ -17,18 +18,18 @@ zero :: InfInt
 zero = IntValue 0
 
 -- example use of InfInt
-example :: IO()
-example = do
+infIntTests :: IO()
+infIntTests = do
     putStrLn "Type examples: "
     let thing1 = NegInf
         thing2 = IntValue 3
         thing3 = IntValue 5
         thing4 = PosInf
     
-    print $ thing1 < thing2   -- Output: True
-    print $ thing1 == thing1   -- Output: True
-    print $ thing4 == thing4   -- Output: True
-    print $ thing1 < thing3   -- Output: True
-    print $ thing2 < thing3   -- Output: True
-    print $ thing3 > thing2   -- Output: True
-    print $ thing2 < thing4   -- Output: True
+    test "InfInt test 1" (thing1 < thing2)   -- Output: True
+    test "InfInt test 2" (thing1 == thing1)   -- Output: True
+    test "InfInt test 3" (thing4 == thing4)   -- Output: True
+    test "InfInt test 4" (thing1 < thing3)   -- Output: True
+    test "InfInt test 5" (thing2 < thing3)   -- Output: True
+    test "InfInt test 6" (thing3 > thing2)   -- Output: True
+    test "InfInt test 7" (thing2 < thing4)   -- Output: True

@@ -1,7 +1,7 @@
 module Display (showBoard) where
 
 import ChessPieces ( Piece, Coordinate(Coord), idAt )
-import Moves
+-- import Moves
 
 -- initiates display of the board from square A8
 showBoard :: [Piece] -> IO()
@@ -36,4 +36,3 @@ getPieceSymbol (Just id)
     | id == 11 = 'K'
     | id == 12 = 'k'
 getPieceSymbol Nothing = '_'
-

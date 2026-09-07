@@ -104,8 +104,6 @@ colorAt coord pieces
     where
         first = head pieces
 
-
-
 startingPosition :: [Piece]
 startingPosition = [(Pc 8 (Coord 1 8)), (Pc 4 (Coord 2 8)), (Pc 6 (Coord 3 8)), (Pc 10 (Coord 4 8)), (Pc 12 (Coord 5 8)), (Pc 6 (Coord 6 8)), (Pc 4 (Coord 7 8)), (Pc 8 (Coord 8 8)),
                     (Pc 2 (Coord 1 7)), (Pc 2 (Coord 2 7)), (Pc 2 (Coord 3 7)), (Pc 2 (Coord 4 7)), (Pc 2 (Coord 5 7)), (Pc 2 (Coord 6 7)), (Pc 2 (Coord 7 7)), (Pc 2 (Coord 8 7)),
