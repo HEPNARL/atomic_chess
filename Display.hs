@@ -2,8 +2,7 @@ module Display (showBoard, readFEN) where
 
 import ChessPieces ( Piece (Pc), Coordinate(Coord), idAt, Color(White,Black) )
 import Data.Char (ord)
-import Language.Haskell.TH (unsafe)
--- import Moves
+
 
 -- initiates display of the board from square A8
 showBoard :: [Piece] -> IO()
@@ -39,6 +38,8 @@ getPieceSymbol (Just id)
     | id == 12 = 'k'
 getPieceSymbol Nothing = '_'
 
+-- converts chracter representations to their piece identification nubers 
+-- inverse of getPieceSymbol
 getSymbolID :: Char -> Maybe Int
 getSymbolID letter
     | letter == 'P' = Just 1
@@ -55,18 +56,16 @@ getSymbolID letter
     | letter == 'k' =Just 12
     | otherwise = Nothing
 
+-- converts FEN color identifier to the internal data type
 -- non exhaustive by design
 getColorFromChar :: Char -> Color
 getColorFromChar letter
     | letter == 'w' = White
     | letter == 'b' = Black
 
+-- reads FEN notation and converts it to a pair of position definition and color of player that is to play next move
 readFEN :: [Char] -> (Color, [Piece])
 readFEN = readFENhelper 8 1 (White, [])
-
-unjust :: Maybe a -> a
-unjust (Just a) = a
-
 readFENhelper :: Int -> Int -> (Color, [Piece]) -> [Char] -> (Color, [Piece])
 readFENhelper row col (_, constructed) (next:notation)
     | next == ' ' = ((getColorFromChar.head) notation, constructed)
@@ -77,3 +76,7 @@ readFENhelper row col (_, constructed) (next:notation)
         id = getSymbolID next
         num = ord next - ord '0'
         new_col = col+num
+
+-- removes Just from Maybe types
+unjust :: Maybe a -> a
+unjust (Just a) = a

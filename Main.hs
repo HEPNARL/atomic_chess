@@ -15,12 +15,11 @@ import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 data GameTree = Tree [Piece] [GameTree] (Maybe Move) Color
     deriving (Eq, Ord, Read, Show)
 
+-- extension of startingPosition for the tree sturcture of the game tree
 startingPositionTree :: GameTree
 startingPositionTree = Tree startingPosition [] Nothing White
 
-isLeaf :: GameTree -> Bool
-isLeaf (Tree _ children _ _) = null children
-
+-- static evaluation function
 eval :: GameTree -> InfInt
 eval tree
     | terminated Black pcs = PosInf  --PosInf
@@ -30,21 +29,24 @@ eval tree
         pcs = getPieces tree
 
 
-
+-- function that returns list of all existing children of a game tree node
 getChildren :: GameTree -> [GameTree]
 getChildren (Tree _ children _ _) = children
 
+-- function that returns the move that was played to reach the selected game tree node
 getMove :: GameTree -> Move
 getMove (Tree _ _ (Just move) _) = move
 getMove (Tree _ _ Nothing _) = nullMove -- runtime error prevention, shouldn't be used
 
+-- returns color of player that is to move next
 getColor :: GameTree -> Color
 getColor (Tree _ _ _ color) = color
 
+-- returns state of the board from game tree node
 getPieces :: GameTree -> [Piece]
 getPieces (Tree pcs _ _ _) = pcs
 
-
+-- generates children nodes for selected game tree node if they don't already exist
 generateChildren :: GameTree -> GameTree
 generateChildren (Tree pieces children move color)
     | not $ null children = (Tree pieces children move color) -- repeated generation prevention
@@ -54,9 +56,12 @@ generateChildren (Tree pieces children move color)
         terminal = eval (Tree pieces children move color)
         generated = [Tree (executeMove pieces x) [] (Just x) (inverseColor color) | x <- (getPlayerMoves color pieces)]
 
+-- initiation function of alpha beta pruning
+-- inputs: maximum depth and root node
+-- returns triplet of position evaluation, best found line and constructed game tree
 abStart :: Int -> GameTree -> (InfInt, [Move], GameTree)
 abStart depth = alphaBeta depth NegInf PosInf
-
+-- recursive part of search with alpha beta cutoff
 alphaBranches :: Int -> Color -> InfInt -> InfInt -> [GameTree] -> [(InfInt, [Move], GameTree)]
 alphaBranches _ _ _ _ [] = []
 alphaBranches n color alpha beta (tree:trees)
@@ -66,6 +71,8 @@ alphaBranches n color alpha beta (tree:trees)
     where
         (val, best_move, subtree) = alphaBeta (n-1) alpha beta tree
 
+
+-- function that checks all provided followup variants and returns the best one for selected color
 getBest :: Color -> [(InfInt, [Move], GameTree)] -> (InfInt, [Move])
 getBest _ [(val, moves, tree)] = (val, best:moves)
     where best = getMove tree
@@ -84,9 +91,8 @@ getBest White ((val, moves, tree):xs)
 getBest Black [] = (PosInf, [nullMove])
 getBest White [] = (NegInf, [nullMove])
 
-
-
 -- depth max min starting position
+-- node entry function that chechks if node is terminal based on set parameters
 alphaBeta :: Int -> InfInt -> InfInt -> GameTree -> (InfInt, [Move], GameTree)
 alphaBeta 0 _ _ tree = (eval tree, [], tree)
 alphaBeta _ _ _ tree
@@ -101,9 +107,11 @@ alphaBeta n alpha beta (Tree pieces children move color)
         (_ , _, outTrees) = unzip3 results
         (val, best_move) = getBest color results
 
+-- move execution function
 playMove :: GameTree -> Move -> GameTree
 playMove (Tree pieces children _ color) move = (Tree (executeMove pieces move) [] Nothing (inverseColor color))
 
+-- UI move readed
 readMove :: IO (Int, Int, Int, Int)
 readMove = do
     putStrLn "Enter move as four integers separated by spaces:"
@@ -115,10 +123,11 @@ readMove = do
             putStrLn "Invalid input. Please enter exactly four integers."
             readMove
 
-
+-- regular game starting function
 startGame :: IO()
 startGame = playGame startingPositionTree
 
+-- custom game strting function that reads fen of choice from standard input
 customGame :: IO()
 customGame = do
     print ("Insert FEN: ")
@@ -127,6 +136,8 @@ customGame = do
         (color, pieces) = readFEN fen
     playGame (Tree pieces [] Nothing color)
 
+
+-- UI game mechanics
 playGame :: GameTree -> IO()
 playGame tree = do
     showBoard (getPieces tree)

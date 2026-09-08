@@ -1,41 +1,54 @@
 {- HLINT ignore "Redundant bracket" -}
 module ChessPieces where
 
+-- coordinates are in form of column number, row number
 data Coordinate = Coord Int Int
     deriving (Eq, Ord, Read, Show)
 
+-- player colors type
 data Color = Black | White
     deriving (Eq, Ord, Read, Show)
 
+-- each piece has a coordinate as its location on the board and id where odd numbers corespond to white pieces and even numbers are for black pieces
+-- pieces for each color are in following order: pawn, knight, bishop, rook, queen, king
+-- ids start with 1 for white pawn
 data Piece = Pc Int Coordinate
     deriving (Eq, Ord, Read, Show)
 
+-- move is a pair of starting and target coordinates
 data Move = Mv Coordinate Coordinate
     deriving (Eq, Ord, Read, Show)
 
 -- base functions for introduced data types
 
+-- returns coordinate of a Piece
 getCoordinate :: Piece -> Coordinate
 getCoordinate (Pc _ cd) = cd
 
+-- returns id of a piece
 getId :: Piece -> Int
 getId (Pc id _) = id
 
+-- returns color value from a Piece
 getColor :: Piece -> Color
 getColor piece
     | odd (getId piece) = White
     | otherwise = Black
 
+-- retunrs column number from coordinate
 xAxis :: Coordinate -> Int
 xAxis (Coord x  _) = x
 
+-- retunrs row number from coordinate
 yAxis :: Coordinate -> Int
 yAxis (Coord _  y) = y
 
+-- returns inverse color of the input
 inverseColor :: Color -> Color
 inverseColor White = Black
 inverseColor Black = White
 
+-- from position defined as a list of Piece returns id of a piece at desired coordinate or Nuthing if coordinate is not occupied
 idAt :: [Piece] -> Coordinate -> Maybe Int
 idAt [] _ = Nothing
 idAt ((Pc id crd1):pieces) crd2
@@ -83,7 +96,7 @@ explodePiecesHelper pieces (Just coord)
     where
         next = head pieces
 
-
+-- unit test for ChessPieces module
 explosionTests :: IO()
 explosionTests = do
     test "explosion test 1" (exploded (Pc 1 (Coord 2 2) )(Coord 2 2))
@@ -95,7 +108,7 @@ explosionTests = do
     test "explosion test 7" ((explodePieces [Pc 1 (Coord 6 6), Pc 2 (Coord 6 6), Pc 3 (Coord 5 5), Pc 1 (Coord 7 7)]) == [Pc 1 (Coord 7 7)])
 -----------------------------------------------------------------------------------------------------------
 
-
+-- returns color of a piece on selected coordinate
 colorAt :: Coordinate -> [Piece] -> Color
 colorAt coord pieces
     | null pieces = Black --or noithing I need to decide later
@@ -104,6 +117,7 @@ colorAt coord pieces
     where
         first = head pieces
 
+-- returns ctarting chess position
 startingPosition :: [Piece]
 startingPosition = [(Pc 8 (Coord 1 8)), (Pc 4 (Coord 2 8)), (Pc 6 (Coord 3 8)), (Pc 10 (Coord 4 8)), (Pc 12 (Coord 5 8)), (Pc 6 (Coord 6 8)), (Pc 4 (Coord 7 8)), (Pc 8 (Coord 8 8)),
                     (Pc 2 (Coord 1 7)), (Pc 2 (Coord 2 7)), (Pc 2 (Coord 3 7)), (Pc 2 (Coord 4 7)), (Pc 2 (Coord 5 7)), (Pc 2 (Coord 6 7)), (Pc 2 (Coord 7 7)), (Pc 2 (Coord 8 7)),

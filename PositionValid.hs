@@ -6,7 +6,7 @@ import Moves
 import Display
 import Text.XHtml (black)
 
-
+-- check if first set is subset of the second set
 isSubsetOf :: (Eq a) => [a] -> [a] -> Bool
 isSubsetOf [] _ = True
 isSubsetOf (x:xs) ys = x `elem` ys && isSubsetOf xs ys
@@ -17,6 +17,7 @@ validPosition pieces = 11 `elem` ids && 12 `elem` ids
     where
         ids = [getId x | x <- pieces]
 
+-- test if the set position has ended by win on either side
 finished :: [Piece] -> Bool
 finished x = terminated Black x || terminated White x
 

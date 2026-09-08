@@ -1,10 +1,11 @@
 module IntExtended where
 import ChessPieces (test)
 
-
+-- integer data type extended by positive ad negative infinity required for alpha beta pruning
 data InfInt = NegInf | PosInf | IntValue Int
     deriving (Eq, Read, Show)
-
+    
+-- definition of ordering for InfInt
 instance Ord InfInt where
     compare NegInf NegInf = EQ
     compare PosInf PosInf = EQ
@@ -14,10 +15,11 @@ instance Ord InfInt where
     compare _ NegInf = GT
     compare (IntValue x) (IntValue y) = compare x y
 
+-- shorter syntax for IntValue 0 from InfInt
 zero :: InfInt
 zero = IntValue 0
 
--- example use of InfInt
+-- unit tests for Integers extended by infinities
 infIntTests :: IO()
 infIntTests = do
     let thing1 = NegInf
