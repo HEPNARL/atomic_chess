@@ -20,7 +20,6 @@ zero = IntValue 0
 -- example use of InfInt
 infIntTests :: IO()
 infIntTests = do
-    putStrLn "Type examples: "
     let thing1 = NegInf
         thing2 = IntValue 3
         thing3 = IntValue 5

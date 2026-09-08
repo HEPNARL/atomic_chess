@@ -12,14 +12,14 @@ import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 -- explosion deletes all surrounding squares
 
 -- position, variants, low high tree_size move_from_previous_position player_turn
-data GameTree = Tree [Piece] [GameTree] Int (Maybe Move) Color
+data GameTree = Tree [Piece] [GameTree] (Maybe Move) Color
     deriving (Eq, Ord, Read, Show)
 
 startingPositionTree :: GameTree
-startingPositionTree = Tree startingPosition [] 1 Nothing White
+startingPositionTree = Tree startingPosition [] Nothing White
 
 isLeaf :: GameTree -> Bool
-isLeaf (Tree _ children _ _ _) = null children
+isLeaf (Tree _ children _ _) = null children
 
 eval :: GameTree -> InfInt
 eval tree
@@ -32,27 +32,27 @@ eval tree
 
 
 getChildren :: GameTree -> [GameTree]
-getChildren (Tree _ children _ _ _) = children
+getChildren (Tree _ children _ _) = children
 
 getMove :: GameTree -> Move
-getMove (Tree _ _ _ (Just move) _) = move
-getMove (Tree _ _ _ Nothing _) = nullMove -- runtime error prevention, shouldn't be used
+getMove (Tree _ _ (Just move) _) = move
+getMove (Tree _ _ Nothing _) = nullMove -- runtime error prevention, shouldn't be used
 
 getColor :: GameTree -> Color
-getColor (Tree _ _ _ _ color) = color
+getColor (Tree _ _ _ color) = color
 
 getPieces :: GameTree -> [Piece]
-getPieces (Tree pcs _ _ _ _) = pcs
+getPieces (Tree pcs _ _ _) = pcs
 
 
 generateChildren :: GameTree -> GameTree
-generateChildren (Tree pieces children size move color)
-    | not $ null children = (Tree pieces children size move color) -- repeated generation prevention
-    | (terminal == PosInf) || (terminal == NegInf) = (Tree pieces [] size move color) -- no expansion for terminal positions
-    | (not.null) generated = (Tree pieces generated size move color)
+generateChildren (Tree pieces children move color)
+    | not $ null children = (Tree pieces children move color) -- repeated generation prevention
+    | (terminal == PosInf) || (terminal == NegInf) = (Tree pieces [] move color) -- no expansion for terminal positions
+    | (not.null) generated = (Tree pieces generated move color)
     where
-        terminal = eval (Tree pieces children size move color)
-        generated = [Tree (executeMove pieces x) [] 1 (Just x) (inverseColor color) | x <- (getPlayerMoves color pieces)]
+        terminal = eval (Tree pieces children move color)
+        generated = [Tree (executeMove pieces x) [] (Just x) (inverseColor color) | x <- (getPlayerMoves color pieces)]
 
 abStart :: Int -> GameTree -> (InfInt, [Move], GameTree)
 abStart depth = alphaBeta depth NegInf PosInf
@@ -92,17 +92,17 @@ alphaBeta 0 _ _ tree = (eval tree, [], tree)
 alphaBeta _ _ _ tree
     | terminated Black (getPieces tree) = (eval tree, [], tree)
     | terminated White (getPieces tree) = (eval tree, [], tree)
-alphaBeta n alpha beta (Tree pieces children size move color)
-    | not $ null results = (val, best_move, Tree pieces outTrees size move color)
-    | otherwise = (val, best_move, Tree pieces outTrees size move color)
+alphaBeta n alpha beta (Tree pieces children move color)
+    | not $ null results = (val, best_move, Tree pieces outTrees move color)
+    | otherwise = (val, best_move, Tree pieces outTrees move color)
     where
-        newchildren = generateChildren (Tree pieces children size move color)
+        newchildren = generateChildren (Tree pieces children move color)
         results = alphaBranches n color (if color == White then NegInf else alpha) (if color == Black then beta else PosInf) (getChildren newchildren)
         (_ , _, outTrees) = unzip3 results
         (val, best_move) = getBest color results
 
 playMove :: GameTree -> Move -> GameTree
-playMove (Tree pieces children size _ color) move = (Tree (executeMove pieces move) [] size Nothing (inverseColor color))
+playMove (Tree pieces children _ color) move = (Tree (executeMove pieces move) [] Nothing (inverseColor color))
 
 readMove :: IO (Int, Int, Int, Int)
 readMove = do
@@ -125,7 +125,7 @@ customGame = do
     fen <- getLine
     let
         (color, pieces) = readFEN fen
-    playGame (Tree pieces [] 0 Nothing color)
+    playGame (Tree pieces [] Nothing color)
 
 playGame :: GameTree -> IO()
 playGame tree = do
@@ -157,6 +157,7 @@ main = do
     moveTests
     infIntTests
     terminationTests
-    customGame
+    -- customGame
+    startGame
     
 
