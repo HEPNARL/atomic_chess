@@ -119,6 +119,14 @@ readMove = do
 startGame :: IO()
 startGame = playGame startingPositionTree
 
+customGame :: IO()
+customGame = do
+    print ("Insert FEN: ")
+    fen <- getLine
+    let
+        (color, pieces) = readFEN fen
+    playGame (Tree pieces [] 0 Nothing color)
+
 playGame :: GameTree -> IO()
 playGame tree = do
     showBoard (getPieces tree)
@@ -149,6 +157,6 @@ main = do
     moveTests
     infIntTests
     terminationTests
-    startGame
+    customGame
     
 
