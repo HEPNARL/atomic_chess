@@ -9,7 +9,6 @@ import IntExtended ( InfInt (NegInf, PosInf, IntValue), zero, infIntTests )
 import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 import ReadMove ( getLegalMove )
 import AlphaBeta
-import GHC.Unit.Database (GenericUnitInfo(unitCcOptions))
 
 -- move execution function
 playMove :: GameTree -> Move -> GameTree
