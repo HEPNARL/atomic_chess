@@ -1,8 +1,8 @@
 module ReadMove where
-    
+
 import ChessPieces
 import Moves
-
+import Data.Char (ord)
 
 -- UI move readed
 readMove :: IO (Int, Int, Int, Int)
@@ -17,6 +17,18 @@ readMove = do
             readMove
 
 
+betterRead :: IO (Char, Int, Char, Int)
+betterRead = do
+    putStrLn "Enter move in form of full move syntax without without piece type specifier separated by spaces:"
+    line <- getLine
+    case line of
+        [x, y, z, w] -> return (x, ord y  - ord '0', z, ord w - ord '0')
+        _ -> do
+            betterRead
+-- converts the read input to the older readMove format
+betterReadTranslate :: (Char, Int, Char, Int) -> (Int, Int, Int, Int)
+betterReadTranslate (col1, row1, col2, row2) = (ord col1 - ord 'a' + 1, row1, ord col2 - ord 'a' + 1, row2)
+
 -- verification of move legality for UI
 verifyMove :: Move -> Color -> [Piece] -> Bool
 verifyMove move color pieces = move `elem` legal
@@ -26,8 +38,9 @@ verifyMove move color pieces = move `elem` legal
 -- move reading for UI
 getLegalMove :: Color -> [Piece] -> IO(Move)
 getLegalMove color pieces = do
-    (a, b, c, d) <- readMove
+    inputline <- betterRead
     let
+        (a, b, c, d) = betterReadTranslate inputline
         move = Mv (Coord a b) (Coord c d)
     if verifyMove move color pieces
         then do
@@ -35,4 +48,3 @@ getLegalMove color pieces = do
         else do
             move <- getLegalMove color pieces
             return move
-
