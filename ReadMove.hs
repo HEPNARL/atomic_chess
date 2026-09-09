@@ -1,3 +1,5 @@
+{- HLINT ignore "Redundant return" -}
+{- HLINT ignore "Redundant bracket" -}
 module ReadMove where
 
 import ChessPieces
@@ -16,7 +18,7 @@ readMove = do
             putStrLn "Invalid input. Please enter exactly four integers."
             readMove
 
-
+-- improved UI reading to make move imput easier with extended notation ie. e2e4
 betterRead :: IO (Char, Int, Char, Int)
 betterRead = do
     putStrLn "Enter move in form of full move syntax without without piece type specifier separated by spaces:"

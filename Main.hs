@@ -9,6 +9,7 @@ import IntExtended ( InfInt (NegInf, PosInf, IntValue), zero, infIntTests )
 import Distribution.Utils.Generic (fstOf3, sndOf3, trdOf3)
 import ReadMove
 import AlphaBeta
+import GHC.Unit.Database (GenericUnitInfo(unitCcOptions))
 
 -- move execution function
 playMove :: GameTree -> Move -> GameTree
@@ -48,7 +49,16 @@ playGame tree = do
             print (fstOf3 res)
             playGame (playMove moved (head $ sndOf3 res))
 
-
+-- selection between custom and standard game
+uiOptions :: IO()
+uiOptions = do 
+    putStrLn "Play custom game (c) or standard atomicChess (a):"
+    line <- getLine
+    case line of
+        "c" -> customGame
+        "a" -> startGame
+        _ -> do
+            uiOptions
 
 main :: IO ()
 main = do
@@ -56,7 +66,6 @@ main = do
     moveTests
     infIntTests
     terminationTests
-    -- customGame
-    startGame
+    uiOptions
 
 
