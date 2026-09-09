@@ -1,6 +1,6 @@
 {- HLINT ignore "Redundant return" -}
 {- HLINT ignore "Redundant bracket" -}
-module ReadMove where
+module ReadMove (getLegalMove) where
 
 import ChessPieces
 import Moves

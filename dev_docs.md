@@ -1,12 +1,23 @@
 # Developer documentation
-The source code is spit into following 6 modules:
+The source code is spit into following 8 modules:
 - Main.hs
 - Moves.hs
 - PositionValid.hs
 - IntExtended.hs
 - Display.hs
 - ChessPieces.hs
+- AlphaBeta.hs 
+- ReadMove.hs
 
+# Problem and solution
+The goal is to create a player algorithm of chess variant Atomic chess and create a user interface to play against the player.
+
+The used player algorithm is alpha-beta pruning that uses positions branching factor as evaluation function for non-terminal positions.
+
+Positions are defined by a list of chess pieces where each piece has defined a coordinate and type identified that defines both its color and type (pawn, rook, ...).
+
+
+# Modules
 ## ChessPieces.hs
 Provides core functionality for the game: explosions and definition of data types essential for representation of the game.
 
@@ -42,7 +53,7 @@ This module provides following functions:
 - `moveTests`
     - module tests
 
-# PositionValid.hs
+## PositionValid.hs
 Provides checks if the selected position is one of an ongoing name. With funcions for both one sided and collective game termination checks:
 
 ```
@@ -53,7 +64,7 @@ terminated :: Color -> [Piece] -> Bool
 
 Module test are avalable in `terminationTests`
 
-# IntExtended.hs
+## IntExtended.hs
 This module provides implementation if Integer data type with positive and negative infinity:
 ```
 data InfInt = NegInf | PosInf | IntValue Int
@@ -64,11 +75,15 @@ The type has implemented only Ord operation and doesn't support any mathematical
 
 The ordering functionality can be tested with `infIntTests`
 
-# Display.hs
-This module provides a single function: `showBoard :: [Piece] -> IO()` that displays the board state in terminal.
+## Display.hs
+This module provides two functions: `showBoard :: [Piece] -> IO()` that displays the board state in terminal.
+The second function is `readFEN :: [Char] -> (Color, [Piece])` that convers string of Forsynth-Edwards notation to the internal position definition.
 
-# Main.hs
-The main module contains the game engine that searches the game tree:
+## Main.hs
+The main module contains UI options for accessing the available features
+
+## AlphaBeta.hs 
+The AlphaBeta module contains the game engine that searches the game tree:
 
 ```
 -- position, variants, low high tree_size move_from_previous_position player_turn
@@ -77,3 +92,6 @@ data GameTree = Tree [Piece] [GameTree] Int (Maybe Move) Color
 ```
 
 The game tree is searched through using alpha beta pruning that uses the difference of the ammount of moves for each player at the position as the heuristic evaluation function for non-terminal position.
+
+## ReadMove.hs
+Provides ```getLegalMove :: Color -> [Piece] -> IO(Move)``` function for parsing and checking legality of a chess move from standard input.
