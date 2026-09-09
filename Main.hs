@@ -40,7 +40,7 @@ playGame tree = do
     showBoard (getPieces tree)
     if finished $ getPieces tree
     then do 
-        if terminated Black $ getPieces tree then putStrLn "Game over white won." else putStrLn "Game over black won."
+        putStrLn "Game over black won."
     else do
         move <- getLegalMove (getColorTree tree) (getPieces tree)
         let
@@ -48,14 +48,11 @@ playGame tree = do
         showBoard (getPieces moved)
         if finished $ getPieces moved
             then do 
-                (if terminated Black $ getPieces tree then putStrLn "Game over white won." else putStrLn "Game over black won.")
+                putStrLn "Game over white won."
         else do
-            let res = abStart 3 moved
-            if PosInf == fstOf3 res || NegInf == fstOf3 res
-                then do
-                    playGame (playMove moved (head $ sndOf3 res))
-            else do
-                playGame (playMove moved (head $ sndOf3 (abStart 4 (trdOf3 res))))
+            let res = abStart 4 moved
+            print (fstOf3 res)
+            playGame (playMove moved (head $ sndOf3 res))
 
 
 

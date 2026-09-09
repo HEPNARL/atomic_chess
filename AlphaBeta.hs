@@ -100,6 +100,6 @@ alphaBeta n alpha beta (Tree pieces children move color)
     | otherwise = (val, best_move, Tree pieces outTrees move color)
     where
         newchildren = generateChildren (Tree pieces children move color)
-        results = alphaBranches n color (if color == White then NegInf else alpha) (if color == Black then beta else PosInf) (getChildren newchildren)
+        results = alphaBranches n color alpha beta (getChildren newchildren) -- (if color == White then NegInf else alpha) (if color == Black then beta else PosInf) (getChildren newchildren)
         (_ , _, outTrees) = unzip3 results
         (val, best_move) = getBest color results
